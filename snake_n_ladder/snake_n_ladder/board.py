@@ -4,7 +4,7 @@
 import random
 from dataclasses import dataclass
 from snake_n_ladder.constants import BoardMeta, Ladders, Snakes, PlayerStatus, \
-    StandardDice, DiceType
+    StandardDice, DiceType, GreenSnakes
 from snake_n_ladder.exception import PlayerException, LadderException, \
     SnakeException, DiceException
 
@@ -12,7 +12,7 @@ from snake_n_ladder.exception import PlayerException, LadderException, \
 @dataclass
 class Player:
     """A dataclass that represents the player details"""
-    def __init__(self, name, cell=None, status=None):
+    def __init__(self, name, cell=None, status=None, green_snake_bites={}):
         """A player initializer that initializes the player
 
         :param name: name of a player
@@ -25,6 +25,7 @@ class Player:
         self.name = name
         self.cell = cell
         self.status = status
+        self.green_snake_bites = green_snake_bites
 
 
 @dataclass
@@ -33,7 +34,7 @@ class Cell:
        and the player's position holding the cell
     """
     def __init__(self, current_step, ladder_top=None,
-                 snake_tail=None):
+                 snake_tail=None, snake_type="Normal"):
         """A cell initializer on the board
 
         :param current_step: current position or the current step
@@ -44,10 +45,10 @@ class Cell:
         :param snake_tail: tail of the snake, defaults to None
         :type snake_tail: int, optional
         """
-        self.player = None
         self.current_step = current_step
         self.snake_tail = snake_tail
         self.ladder_top = ladder_top
+        self.snake_type = snake_type
 
 
 class Board:
@@ -79,6 +80,7 @@ class Board:
         self.add_ladders(board)
         # add snakes
         self.add_snakes(board)
+        self.add_green_snakes(board)
         return board
 
     def create_players(self, players=None):
@@ -93,8 +95,11 @@ class Board:
             msg = "Player names can not be empty"
             raise PlayerException(error_message=msg)
         for name in players:
+            green_snake_bites = {}
+            for snake in GreenSnakes.SNAKES.value:
+                green_snake_bites[snake[0]-1] = False
             player = Player(name, cell=self.start, status=PlayerStatus.
-                            WAITING_FOR_DICE.value)
+                            WAITING_FOR_DICE.value, green_snake_bites=green_snake_bites)
             self.players.append(player)
         return self.players
 
@@ -125,6 +130,13 @@ class Board:
         for snake in Snakes.SNAKES.value:
             cell = board[snake[0]-1]
             cell.snake_tail = snake[1]
+
+    @staticmethod
+    def add_green_snakes(board):
+        for snake in GreenSnakes.SNAKES.value:
+            cell = board[snake[0]-1]
+            cell.snake_tail = snake[1]
+            cell.snake_type = "GREEN"
 
     def play_dice(self):
         """A player throws a dice and returns random number based
@@ -179,6 +191,12 @@ class Board:
             return player
         # check if new cell has a snake bite
         if new_cell.snake_tail:
+            if new_cell.snake_type == "GREEN":
+                is_snake_bite = player.green_snake_bites.get(new_cell.current_step)
+                if is_snake_bite:
+                    player.cell = new_cell
+                    player.green_snake_bites.update({new_cell.current_step: True})
+                    return player
             player.cell = self.board[new_cell.snake_tail - 1]
             return player
         # otherwise return the normal next new cell

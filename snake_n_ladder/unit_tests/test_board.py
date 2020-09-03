@@ -138,6 +138,31 @@ class TestBoard(unittest2.TestCase):
         assert player.cell.current_step == 100
         assert player.status == PlayerStatus.WINNER.value
 
+#     def test_move_player_step_on_green_snake_tail_one(self):
+#         """Test - move player step on green snake tail """
+#         player = self.snake_n_ladder_board.players[0]
+#         player.cell.current_step = 29
+#         print(player.cell.current_step)
+#         number = 2
+#         player = self.snake_n_ladder_board.move_player_step(player, number)
+#         assert player.cell.current_step == 11
+
+    def test_move_player_step_on_green_snake_tail_two(self):
+        """Test - move player step on green snake tail """
+        player = self.snake_n_ladder_board.players[0]
+        player.cell.current_step = 29
+        print(player.cell.current_step)
+        number = 2
+        player = self.snake_n_ladder_board.move_player_step(player, number)
+        print(player.cell.current_step)
+        assert player.cell.current_step == 11
+        # simulate 
+        player.cell.current_step = 29
+        print(player.cell.current_step)
+        number = 2
+        player = self.snake_n_ladder_board.move_player_step(player, number)
+        assert player.cell.current_step == 31
+
     def test_print_board(self):
         """Test - print board on success """
         self.snake_n_ladder_board.create_players(["amol", "paras"])

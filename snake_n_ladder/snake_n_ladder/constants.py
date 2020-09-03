@@ -32,6 +32,13 @@ class Snakes(Enum):
     SNAKES = [SNAKE1, SNAKE2, SNAKE3, SNAKE4]
 
 
+class GreenSnakes(Enum):
+    SNAKE1 = (31, 11) # 29
+    SNAKE2 = (21, 6)
+
+    SNAKES = [SNAKE1, SNAKE2]
+
+
 class PlayerStatus(Enum):
     """An enum to represent the status of the players """
     ACTIVE = "PLAYING"
