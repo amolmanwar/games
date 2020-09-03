@@ -97,7 +97,7 @@ class Board:
         for name in players:
             green_snake_bites = {}
             for snake in GreenSnakes.SNAKES.value:
-                green_snake_bites[snake[0]-1] = False
+                green_snake_bites[snake[0] - 1] = False
             player = Player(name, cell=self.start, status=PlayerStatus.
                             WAITING_FOR_DICE.value, green_snake_bites=green_snake_bites)
             self.players.append(player)
@@ -195,8 +195,9 @@ class Board:
                 is_snake_bite = player.green_snake_bites.get(new_cell.current_step)
                 if is_snake_bite:
                     player.cell = new_cell
-                    player.green_snake_bites.update({new_cell.current_step: True})
                     return player
+                player.green_snake_bites.update({new_cell.current_step: True})
+
             player.cell = self.board[new_cell.snake_tail - 1]
             return player
         # otherwise return the normal next new cell
